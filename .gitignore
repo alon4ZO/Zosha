@@ -1,0 +1,7 @@
+*opendb
+Bricks/Debug/
+Bricks/Release/
+Debug/
+*.db
+*.suo
+*.ipch
