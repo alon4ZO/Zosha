@@ -6,15 +6,17 @@
 #include <functional>
 
 
+#define NUM_OF_WALLS (3)
+
+
 class basicObjectCommon
 {
 	sf::Vector2f centerLocation;
 	sf::Vector2f dimensions;
 	sf::Vector2i speed;
+	sf::Shape * pShape; 
 	float radius;
 	int color;
-
-	sf::Shape * pShape; 
 
 public:
 	void setCircleCharacteristics(sf::CircleShape*   , sf::Vector2f xi_centerLocation, sf::Vector2i xi_speed, float xi_radius );
@@ -22,6 +24,7 @@ public:
 	//void setCharacteristics(sf::RectangleShape*, sf::Vector2i xi_centerLocation, sf::Vector2i xi_speed, sf::Vector2f xi_dimensions ); //ALONB - why can't i overload these 2 functions? It keeps on selecting the wrong 1?
 	sf::Shape * getShape() { return pShape; };
 };
+
 
 
 class combinedObjGeneric
@@ -35,8 +38,9 @@ public:
 };
 
 
+
 class ballObjC : public combinedObjGeneric {
-public:
+public: //why public?
 	basicObjectCommon main;
 	sf::CircleShape mainShape;
 };
@@ -64,16 +68,16 @@ class BasicObjects
 	paddleObjC paddleObj; 
 	WallObjC wallObj;
 
-	std::list<combinedObjGeneric*> refreshList;
+	std::list<combinedObjGeneric*> changeList;
 	std::function<void(sf::Shape *)> drawFunc;
 
-public:
-	void init(sf::Vector2i screenSize);
 
+public:
+	BasicObjects() {};
+	void init(sf::Vector2i screenSize);
 	void registerDisplayFunctions(std::function<void(sf::Shape *)> xi_function) { drawFunc = xi_function; }
 	std::function<void(sf::Shape *)> getDrawFunction() { return drawFunc; }
-
-	std::list<combinedObjGeneric*> getrefreshList() { return refreshList; }
+	std::list<combinedObjGeneric*> getObjectsList() { return changeList; }
 };
 
 

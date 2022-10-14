@@ -14,7 +14,7 @@ extern sf::CircleShape * circle;
 
 void Engine::init(BasicObjects * xi_objects) {
 
-	std::list<combinedObjGeneric*> list = xi_objects->getObjectsList();
+	std::list<combinedObjGeneric*> list = xi_objects->getrefreshList();
 
 	for (std::list<combinedObjGeneric*>::iterator listIt = list.begin(); listIt != list.end(); listIt++)
 	{

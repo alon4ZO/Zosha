@@ -1,9 +1,12 @@
 #include "BasicObjects.h"
 #include <iostream> 
-#include "Display.h"
+#include <new>       
+#include <list>       
+#include "Display.h" //ALONB - what is the difference between .h and .hpp?
 using namespace std;
-//ALONB - what is the difference between .h and .hpp?
 
+
+sf::CircleShape * circle; //ALONB - why need to define this variable and not do it directly?
 extern sf::RenderWindow * pWindow; //ALONB - temp..
 
 void BasicObjects::init(sf::Vector2i xi_screenSize)
@@ -14,14 +17,14 @@ void BasicObjects::init(sf::Vector2i xi_screenSize)
 	float radius = 100;
 	ballObj.main.setCircleCharacteristics(&ballObj.mainShape, center, speed, radius);
 	ballObj.addBasicShape(&ballObj.main);
-	refreshList.push_front(&ballObj);
+	changeList.push_front(&ballObj);
 
 	center = {100,0};
 	speed = { 0,0 };
 	sf::Vector2f dimensions(100, 100);
 	paddleObj.main.setRectangleCharacteristics(&paddleObj.mainShape, center, speed, dimensions);
 	paddleObj.addBasicShape(&paddleObj.main);
-	refreshList.push_front(&paddleObj);
+	changeList.push_front(&paddleObj);
 
 
 	center = { 800, 100 };
@@ -36,7 +39,7 @@ void BasicObjects::init(sf::Vector2i xi_screenSize)
 	wallObj.addBasicShape(&wallObj.ceiling);
 	wallObj.addBasicShape(&wallObj.left);
 	wallObj.addBasicShape(&wallObj.right);
-	refreshList.push_front(&wallObj);
+	changeList.push_front(&wallObj);
 }
 
 
@@ -49,6 +52,8 @@ void basicObjectCommon::setCircleCharacteristics(sf::CircleShape* xi_pShape, sf:
 	xi_pShape->setRadius(100.f);
 	xi_pShape->setFillColor(sf::Color::Red);
 	pShape = xi_pShape;
+
+
 }
 
 void basicObjectCommon::setRectangleCharacteristics(sf::RectangleShape* xi_pShape, sf::Vector2f xi_centerLocation, sf::Vector2i xi_speed, sf::Vector2f xi_dimensions) {
@@ -60,4 +65,5 @@ void basicObjectCommon::setRectangleCharacteristics(sf::RectangleShape* xi_pShap
 	xi_pShape->setPosition(xi_centerLocation);
 	xi_pShape->setFillColor(sf::Color::Blue);
 	pShape = xi_pShape;
+
 }
