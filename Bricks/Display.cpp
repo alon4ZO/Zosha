@@ -1,0 +1,34 @@
+#include <iostream>
+#include "Display.h"
+#include <new>
+#include <SFML/Graphics.hpp>
+
+
+
+using namespace std;
+sf::RenderWindow * pWindow;
+
+
+void Display::init() {
+	cout << "Initializing display" << endl;
+	Display::screenSize.x = sf::VideoMode::getDesktopMode().width; 
+	Display::screenSize.y = sf::VideoMode::getDesktopMode().height;
+	//pWindow = new sf::RenderWindow(sf::VideoMode(Display::screenSize.x/2, Display::screenSize.y/2), "Bricks!", sf::Style::Fullscreen);
+	pWindow = new sf::RenderWindow(sf::VideoMode(Display::screenSize.x/1.5, Display::screenSize.y/1.5), "Bricks!");
+	pWindow->clear();
+}
+
+sf::Vector2i Display::getScreenSize()
+{
+	return Display::screenSize;	
+}
+
+
+void Display::drawShape(sf::Shape * xi_pShape)
+{
+	pWindow->draw(*xi_pShape);
+}
+
+
+
+

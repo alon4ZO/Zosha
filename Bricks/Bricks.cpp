@@ -1,24 +1,67 @@
 #include <SFML/Graphics.hpp>
+#include <iostream>
+#include <thread>
+#include <windows.h>  
+#include<thread>
+#include "Display.h"
+#include "BasicObjects.h"
+#include "Engine.h"
+using namespace std;
+
 
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-	sf::CircleShape shape(100.f);
-	shape.setFillColor(sf::Color::Green);
+	Display display;
+	BasicObjects basicObjects;
+	Engine engine;
 
-	while (window.isOpen())
-	{
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-				window.close();
-		}
+	display.init();
 
-		window.clear();
-		window.draw(shape);
-		window.display();
-	}
+	basicObjects.registerDisplayFunctions([&display](sf::Shape* xi_pShape) -> void { return display.drawShape(xi_pShape); });
+	basicObjects.init(display.getScreenSize());
 
+	engine.init(&basicObjects);
 	return 0;
 }
+
+
+
+
+
+//sf::RenderWindow window(sf::VideoMode(1920, 1080), "SFML wgorks!");
+//sf::RenderWindow window(sf::VideoMode(200, 200), "SFML wgorks!", sf::Style::Fullscreen);
+//sf::CircleShape shape(100.f);
+//shape.setFillColor(sf::Color::Green);
+//cout << "Hello";
+
+////std::cout << sf::VideoMode::getDesktopMode().width << ", " << sf::VideoMode::getDesktopMode().height;
+
+
+//while (window.isOpen())
+//{
+//	if (GetKeyState('A') & 0x8000)
+//	{
+//		// Do stuff
+//		shape.setFillColor(sf::Color::Red);
+//	}
+//	else if (GetKeyState('B') & 0x8000)
+//	{
+//		shape.setFillColor(sf::Color::Blue);
+//	}
+//	else
+//	{
+//		shape.setFillColor(sf::Color::Magenta);
+//		shape.setScale(0.5, 0.5);
+//	}
+
+//	window.clear();
+//	window.draw(shape);
+//	window.display();
+
+//	sf::Event event;
+//	while (window.pollEvent(event))
+//	{
+//		if (event.type == sf::Event::Closed)
+//			window.close();
+//	}
+//}
