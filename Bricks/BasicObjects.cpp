@@ -66,7 +66,6 @@ void basicObjectCommon::setRectangleCharacteristics(sf::RectangleShape* xi_pShap
 	centerLocation = xi_centerLocation;
 	speed = xi_speed;
 	dimensions = xi_dimensions;
-	sf::RectangleShape * rectangle;
 	xi_pShape->setSize(xi_dimensions);
 	xi_pShape->setPosition(xi_centerLocation);
 	xi_pShape->setFillColor(xi_color);

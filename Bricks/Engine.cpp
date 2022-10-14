@@ -6,11 +6,14 @@
 #include "Display.h"
 #include "BasicObjects.h"
 #include "Engine.h"
+#include <chrono>
+#include <thread>
+
 using namespace std;
 
 extern sf::RenderWindow * pWindow; //ALONB - temp..
 
-extern sf::CircleShape * circle;
+
 
 void Engine::init(BasicObjects * xi_objects) {
 
@@ -27,6 +30,10 @@ void Engine::init(BasicObjects * xi_objects) {
 			xi_objects->getDrawFunction()(s);
 		}
 	}
+	std::thread t1(&Engine::gameThread, Engine());
+
+
+
 	pWindow->display();
 
 	while (pWindow->isOpen())
@@ -42,10 +49,31 @@ void Engine::init(BasicObjects * xi_objects) {
 }
 
 
+void Engine::gameThread() {
+	//unsigned int microseconds = 100000;
+	while (1)
+	{
+	std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	//cout << "It" << endl;
+	//if (GetKeyState('A') & 0x8000)
+	//{
+	//	// Do stuff
+	//	shape.setFillColor(sf::Color::Red);
+	//}
+	//else if (GetKeyState('B') & 0x8000)
+	//{
+	//	shape.setFillColor(sf::Color::Blue);
+	//}
+
+	//}
+}
 
 
 
-//std::cout << sf::VideoMode::getDesktopMode().width << ", " << sf::VideoMode::getDesktopMode().height;
+
+
+
+
 
 
 

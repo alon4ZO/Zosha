@@ -5,6 +5,8 @@ class Engine
 {
 public:
 	void init(BasicObjects *objects);
+	void gameThread();
+
 };
 
 #endif __ENGINE__
