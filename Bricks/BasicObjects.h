@@ -6,6 +6,20 @@
 #include <functional>
 
 
+#define GAME_OBJECTS_WALL_COLOR   (sf::Color::Magenta)
+#define GAME_OBJECTS_BALL_COLOR   (sf::Color::Red)
+#define GAME_OBJECTS_PADDLE_COLOR (sf::Color::Cyan)
+
+
+#define GAME_OBJECTS_WALL_THIKNESS_RATIO (0.03) 
+#define GAME_OBJECTS_WALL_HEIGHT_RATIO (0.9)
+#define GAME_OBJECTS_WALL_WIDTH_RATIO (0.7)
+
+
+#define GAME_OBJECTS_PADDLE_VERTICAL_THICKNESS_RATIO (0.02)
+#define GAME_OBJECTS_PADDLE_VERTICAL_HEIGHT (0.91)
+#define GAME_OBJECTS_PADDLE_WIDTH_RATIO (0.1)
+
 class basicObjectCommon
 {
 	sf::Vector2f centerLocation;
@@ -17,8 +31,8 @@ class basicObjectCommon
 	sf::Shape * pShape; 
 
 public:
-	void setCircleCharacteristics(sf::CircleShape*   , sf::Vector2f xi_centerLocation, sf::Vector2i xi_speed, float xi_radius );
-	void setRectangleCharacteristics(sf::RectangleShape*, sf::Vector2f xi_centerLocation, sf::Vector2i xi_speed, sf::Vector2f xi_dimensions ); //ALONB - why can't i overload these 2 functions? It keeps on selecting the wrong 1?
+	void setCircleCharacteristics(sf::CircleShape*   , sf::Vector2f xi_centerLocation, sf::Vector2i xi_speed, float xi_radius, sf::Color xi_color);
+	void setRectangleCharacteristics(sf::RectangleShape*, sf::Vector2f xi_centerLocation, sf::Vector2i xi_speed, sf::Vector2f xi_dimensions, sf::Color xi_color); //ALONB - why can't i overload these 2 functions? It keeps on selecting the wrong 1?
 	//void setCharacteristics(sf::RectangleShape*, sf::Vector2i xi_centerLocation, sf::Vector2i xi_speed, sf::Vector2f xi_dimensions ); //ALONB - why can't i overload these 2 functions? It keeps on selecting the wrong 1?
 	sf::Shape * getShape() { return pShape; };
 };

@@ -13,8 +13,10 @@ void Display::init() {
 	cout << "Initializing display" << endl;
 	Display::screenSize.x = sf::VideoMode::getDesktopMode().width; 
 	Display::screenSize.y = sf::VideoMode::getDesktopMode().height;
+	screenSize.x *= SCREEN_DISPLAY_RATIO;
+	screenSize.y *= SCREEN_DISPLAY_RATIO;
 	//pWindow = new sf::RenderWindow(sf::VideoMode(Display::screenSize.x/2, Display::screenSize.y/2), "Bricks!", sf::Style::Fullscreen);
-	pWindow = new sf::RenderWindow(sf::VideoMode(Display::screenSize.x/1.5, Display::screenSize.y/1.5), "Bricks!");
+	pWindow = new sf::RenderWindow(sf::VideoMode(Display::screenSize.x, Display::screenSize.y), "Bricks!");
 	pWindow->clear();
 }
 

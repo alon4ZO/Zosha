@@ -2,7 +2,7 @@
 #define __DISPLAY__
 #include <SFML/Graphics.hpp>
 
-
+#define SCREEN_DISPLAY_RATIO (0.9)
 
 class Display
 {

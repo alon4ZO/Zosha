@@ -5,3 +5,8 @@ Debug/
 *.db
 *.suo
 *.ipch
+*.exe
+*.iobj
+*.ipdb
+*.pdb
+Release/*
