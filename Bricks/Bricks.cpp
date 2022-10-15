@@ -18,6 +18,7 @@ int main()
 	display.init();
 
 	basicObjects.registerDisplayFunctions([&display](sf::Shape* xi_pShape) -> void { return display.drawShape(xi_pShape); });
+	//basicObjects.registerMoveFunction([&display](sf::Shape* xi_pShape) -> void { return display.moveShape(xi_pShape); });
 	basicObjects.init(display.getScreenSize());
 
 	engine.init(&basicObjects);

@@ -16,6 +16,7 @@ class Display
 		void init();
 		sf::Vector2i getScreenSize();
 		void drawShape(sf::Shape * xi_shape);
+		void moveShape(sf::Shape * xi_shape);
 		//void addShapeToWindow(Shape objects); TODO ALONB
 };
 

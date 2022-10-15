@@ -32,5 +32,10 @@ void Display::drawShape(sf::Shape * xi_pShape)
 }
 
 
+void Display::moveShape(sf::Shape * xi_pShape)
+{
+	pWindow->draw(*xi_pShape);
+}
+
 
 

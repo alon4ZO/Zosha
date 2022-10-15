@@ -5,7 +5,7 @@ class Engine
 {
 public:
 	void init(BasicObjects *objects);
-	void gameThread();
+	void gameThread(BasicObjects * xi_pObjects);
 
 };
 

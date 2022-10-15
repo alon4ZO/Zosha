@@ -22,10 +22,10 @@
 
 class basicObjectCommon
 {
-	sf::Vector2f centerLocation;
-	sf::Vector2f dimensions;
+	//sf::Vector2f centerLocation;
+	//sf::Vector2f dimensions;
 	sf::Vector2i speed;
-	float radius;
+	//float radius;
 	int color;
 
 	sf::Shape * pShape; 
@@ -41,7 +41,6 @@ public:
 class combinedObjGeneric
 {
 protected:
-	bool isRefreshRequired;
 	std::list<basicObjectCommon *> shapeList;
 public:
 	void addBasicShape(basicObjectCommon * basicObjectCommon) { shapeList.push_front(basicObjectCommon); }
@@ -74,12 +73,14 @@ public:
 
 class BasicObjects
 {
+//public:
 	ballObjC ballObj;
 	paddleObjC paddleObj; 
 	WallObjC wallObj;
 
-	std::list<combinedObjGeneric*> refreshList;
 	std::function<void(sf::Shape *)> drawFunc;
+	void loadAllObjectShapes(combinedObjGeneric * xi_object);
+
 
 public:
 	void init(sf::Vector2i screenSize);
@@ -87,7 +88,11 @@ public:
 	void registerDisplayFunctions(std::function<void(sf::Shape *)> xi_function) { drawFunc = xi_function; }
 	std::function<void(sf::Shape *)> getDrawFunction() { return drawFunc; }
 
-	std::list<combinedObjGeneric*> getrefreshList() { return refreshList; }
+
+
+	//void movePaddleLeft();
+	//void movePaddleRight() {}
+	//void moveBall() {}
 };
 
 

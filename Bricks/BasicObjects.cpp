@@ -30,7 +30,7 @@ void BasicObjects::init(sf::Vector2i xi_screenSize)
 	wallObj.addBasicShape(&wallObj.ceiling);
 	wallObj.addBasicShape(&wallObj.left);
 	wallObj.addBasicShape(&wallObj.right);
-	refreshList.push_front(&wallObj);
+	//refreshList.push_front(&wallObj);
 
 	//Paddle:
 
@@ -40,21 +40,31 @@ void BasicObjects::init(sf::Vector2i xi_screenSize)
 	position.x = (xi_screenSize.x - dimensions.x)/2;
 	paddleObj.main.setRectangleCharacteristics(&paddleObj.mainShape, position, speed, dimensions, GAME_OBJECTS_PADDLE_COLOR );
 	paddleObj.addBasicShape(&paddleObj.main);
-	refreshList.push_front(&paddleObj);
+	//refreshList.push_front(&paddleObj);
 
 	//Ball:
 	float radius = 100;
 	ballObj.main.setCircleCharacteristics(&ballObj.mainShape, position, speed, radius, GAME_OBJECTS_BALL_COLOR);
 	ballObj.addBasicShape(&ballObj.main);
-	refreshList.push_front(&ballObj);
+	//refreshList.push_front(&ballObj);
+
+	loadAllObjectShapes(&ballObj);
+	loadAllObjectShapes(&paddleObj);
+	loadAllObjectShapes(&wallObj);
 
 }
 
+void BasicObjects::loadAllObjectShapes(combinedObjGeneric * xi_object)
+{
+	xi_object->getShapeList();
+}
+
+
 
 void basicObjectCommon::setCircleCharacteristics(sf::CircleShape* xi_pShape, sf::Vector2f xi_centerLocation, sf::Vector2i xi_speed, float xi_radius, sf::Color xi_color) { //TODO: ADD COLOR
-	centerLocation = xi_centerLocation;
+	//centerLocation = xi_centerLocation;
 	speed = xi_speed;
-	radius = xi_radius;
+	//radius = xi_radius;
 	cout << "set c" << endl;
 	xi_pShape->setPosition(0, 150);
 	xi_pShape->setRadius(100.f);
@@ -63,11 +73,16 @@ void basicObjectCommon::setCircleCharacteristics(sf::CircleShape* xi_pShape, sf:
 }
 
 void basicObjectCommon::setRectangleCharacteristics(sf::RectangleShape* xi_pShape, sf::Vector2f xi_centerLocation, sf::Vector2i xi_speed, sf::Vector2f xi_dimensions, sf::Color xi_color) {
-	centerLocation = xi_centerLocation;
+	//centerLocation = xi_centerLocation;
 	speed = xi_speed;
-	dimensions = xi_dimensions;
+	//dimensions = xi_dimensions;
 	xi_pShape->setSize(xi_dimensions);
 	xi_pShape->setPosition(xi_centerLocation);
 	xi_pShape->setFillColor(xi_color);
 	pShape = xi_pShape;
 }
+
+//void BasicObjects::movePaddleLeft() {
+//	for (auto const& i : BasicObjects::paddleObj.getShapeList()) { ; }
+//}
+
