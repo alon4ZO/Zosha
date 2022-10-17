@@ -8,8 +8,8 @@
 class Engine
 {
 public:
-	void init(Animate * animate, Display * display); //TODO: change names.
-	void gameThread(Animate * animate, Display * display);
+	void init(BasicObjects * xi_BasicObjects, Display * display); //TODO: change names.
+	void gameThread(BasicObjects * BasicObjects, Display * display);
 
 };
 

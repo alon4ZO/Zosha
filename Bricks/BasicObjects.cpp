@@ -6,82 +6,154 @@ using namespace std;
 
 
 
+
 void BasicObjects::init(sf::Vector2i xi_screenSize)
 {
 	//Walls:
+	//gameFrame.init();
 	cout << "Initializing game objects. Screen Resolution [x,y] [" << xi_screenSize.x << "," << xi_screenSize.y << "]" << endl;
 
 	sf::Vector2f speed(0, 0);
-	sf::Vector2f dimensions;
-	sf::Vector2f position;
+	sf::Vector2f dimensionsWindow;
+	sf::Vector2f dimensionsFrame;
+	sf::Vector2f dimensionsPaddle;
+	sf::Vector2f positionWindow;
+	sf::Vector2f positionOffsetFrame;
+	sf::Vector2f positionPaddle;
 	sf::Vector2f screenSize((float)xi_screenSize.x, (float)xi_screenSize.y);
 
-	dimensions.x = (float)(int)(screenSize.x*GAME_OBJECTS_GAME_WIN_WIDTH_RATIO);
-	dimensions.y = (float)(int)(screenSize.y*GAME_OBJECTS_GAME_WIN_HEIGHT_RATIO);
-	position.x = (float)(int)(screenSize.x*(1 - GAME_OBJECTS_GAME_WIN_WIDTH_RATIO) / 2);
-	position.y = (float)(int)(screenSize.y*(1 - GAME_OBJECTS_GAME_WIN_HEIGHT_RATIO));
-
-	wallObj.center.setRectangleCharacteristics(&wallObj.centerShape, position, dimensions, GAME_OBJECTS_GAME_WIN_COLOR);
-
-	dimensions.x += (float)(int)(2 * screenSize.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
-	dimensions.y += (float)(int)(screenSize.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
-	position.x -= (float)(int)(screenSize.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
-	position.y -= (float)(int)(screenSize.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
+	dimensionsWindow.x = (float)(int)(screenSize.x*GAME_OBJECTS_GAME_WIN_WIDTH_RATIO);
+	dimensionsWindow.y = (float)(int)(screenSize.y*GAME_OBJECTS_GAME_WIN_HEIGHT_RATIO);
+	positionWindow.x = (float)(int)(screenSize.x*(1 - GAME_OBJECTS_GAME_WIN_WIDTH_RATIO) / 2);
+	positionWindow.y = (float)(int)(screenSize.y*(1 - GAME_OBJECTS_GAME_WIN_HEIGHT_RATIO));
+	gameFrame.setVirtualLocation(positionWindow); //According to inner window.
+	gameFrame.setVirtualDimensions(dimensionsWindow); //According to inner window.
 
 
-	wallObj.outer.setRectangleCharacteristics(&wallObj.outerShape, position, dimensions, GAME_OBJECTS_GAME_WIN_FRAME_COLOR);
-	wallObj.addBasicShape(&wallObj.outer);
-	wallObj.addBasicShape(&wallObj.center);
-	allGamePieces.push_back(&wallObj);
+	dimensionsFrame.x = dimensionsWindow.x + (float)(int)(2 * screenSize.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
+	dimensionsFrame.y = dimensionsWindow.y + (float)(int)(screenSize.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
+	positionOffsetFrame.x = (float)(int)(-screenSize.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
+	positionOffsetFrame.y = (float)(int)(-screenSize.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
 
+	gameFrame.addRectangleShape(dimensionsFrame, GAME_OBJECTS_GAME_WIN_FRAME_COLOR, positionOffsetFrame, speed);
+	gameFrame.addRectangleShape(dimensionsWindow, GAME_OBJECTS_GAME_WIN_COLOR, sf::Vector2f{ 0,0 }, speed);
 
+	gameFrame.loadShapesToAbstractShapeList();
+	allGamePieces.push_back(&gameFrame);
 
 
 	//Paddle:
+	dimensionsPaddle.x = (float)(int)(screenSize.x *GAME_OBJECTS_PADDLE_WIDTH_RATIO);
+	dimensionsPaddle.y = (float)(int)(screenSize.y *GAME_OBJECTS_PADDLE_VERTICAL_THICKNESS_RATIO);
+	positionPaddle.y = (float)(int)(screenSize.y *GAME_OBJECTS_PADDLE_VERTICAL_HEIGHT);
+	positionPaddle.x = (float)(int)((screenSize.x - dimensionsPaddle.x) / 2);
+	paddleObj.setVirtualDimensions(dimensionsPaddle);
+	paddleObj.setVirtualLocation(positionPaddle);
 
-	dimensions.x = (float)(int)(screenSize.x *GAME_OBJECTS_PADDLE_WIDTH_RATIO);
-	dimensions.y = (float)(int)(screenSize.y *GAME_OBJECTS_PADDLE_VERTICAL_THICKNESS_RATIO);
-	position.y = (float)(int)(screenSize.y *GAME_OBJECTS_PADDLE_VERTICAL_HEIGHT);
-	position.x = (float)(int)((screenSize.x - dimensions.x) / 2);
-	paddleObj.speed.x = GAME_OBJECTS_PADDLE_REGULAR_SPEED;
+	speed.x = GAME_OBJECTS_PADDLE_REGULAR_SPEED;
 
-	paddleObj.farthestLeftLocationOfFirstShape = wallObj.center.getShape()->getPosition().x;
-	paddleObj.farthestRightLocationOfFirstShape = wallObj.center.getShape()->getPosition().x + wallObj.centerShape.getSize().x - dimensions.x;
-	paddleObj.main.setRectangleCharacteristics(&paddleObj.mainShape, position, dimensions, GAME_OBJECTS_PADDLE_COLOR);
-	paddleObj.addBasicShape(&paddleObj.main);
+	paddleObj.setMotionLimitLeft(gameFrame.getVirtualLocation().x);
+	paddleObj.setMotionLimitRight(gameFrame.getVirtualLocation().x + gameFrame.getVirtualDimensions().x);
 
+	paddleObj.addRectangleShape(dimensionsPaddle, GAME_OBJECTS_PADDLE_COLOR, { 0,0 }, speed);
+	paddleObj.loadShapesToAbstractShapeList();
 	allGamePieces.push_back(&paddleObj);
 
 
 	//Ball:
 	float radius = (float)(int)(screenSize.y *GAME_OBJECTS_BALL_RADIUS_RATIO);
-	position.x = (float)(int)(screenSize.x / 2);
-	ballObj.main.setCircleCharacteristics(&ballObj.mainShape, position, radius, GAME_OBJECTS_BALL_COLOR);
-	ballObj.addBasicShape(&ballObj.main);
-	ballObj.speed.x = GAME_OBJECTS_BALL_DEFAULT_SPEED_X;
-	ballObj.speed.y = GAME_OBJECTS_BALL_DEFAULT_SPEED_Y;
 
+	ballObj.setVirtualDimensions( { radius, radius }); 
+	ballObj.setVirtualLocation( { (float)(int)(screenSize.x / 2), (float)(int)(screenSize.y / 2) });
+	ballObj.addCircleShape(radius, GAME_OBJECTS_BALL_COLOR, { 0,0 }, { GAME_OBJECTS_BALL_DEFAULT_SPEED_X , GAME_OBJECTS_BALL_DEFAULT_SPEED_Y });
+	ballObj.loadShapesToAbstractShapeList(); //ALONB - do it inside the functions, but watch out not to do it with a pointer that does not exist anymore.
 
-	ballObj.farthestRightLocationOfFirstShape = wallObj.center.getShape()->getPosition().x + wallObj.centerShape.getSize().x - radius;
-	ballObj.farthestLeftLocationOfFirstShape = wallObj.center.getShape()->getPosition().x + radius;
-	ballObj.farthestUpLocationOfFirstShape = wallObj.center.getShape()->getPosition().y + radius;
+	ballObj.setMotionLimitLeft(0);
+	ballObj.setMotionLimitRight(0);
+	ballObj.setMotionLimitTop(0);
+	ballObj.setMotionLimitBottom(0);
 	allGamePieces.push_back(&ballObj);
 }
 
 
 
-void basicObjectCommon::setCircleCharacteristics(sf::CircleShape* xi_pShape, sf::Vector2f xi_centerLocation, float xi_radius, sf::Color xi_color) { //TODO: ADD COLOR //ALONB - the locations is not "Center Location".
-	cout << "set c" << endl;
-	xi_pShape->setPosition(xi_centerLocation);
-	xi_pShape->setRadius(xi_radius);
-	xi_pShape->setFillColor(xi_color);
-	pShape = xi_pShape;
+void virtualObject::addCircleShape(float xi_radius, sf::Color xi_color, sf::Vector2f xi_offsetFromVirtualLocation, sf::Vector2f xi_speed) {
+	sf::CircleShape circleShape;
+	circleShape.setRadius(xi_radius);
+	circleShape.setPosition(this->virtualLocation + xi_offsetFromVirtualLocation);
+	circleShape.setFillColor(xi_color);
+	circleShapesList.push_back(circleShape);
+	speed = xi_speed;
+
 }
 
-void basicObjectCommon::setRectangleCharacteristics(sf::RectangleShape* xi_pShape, sf::Vector2f xi_centerLocation, sf::Vector2f xi_dimensions, sf::Color xi_color) {
-	xi_pShape->setSize(xi_dimensions);
-	xi_pShape->setPosition(xi_centerLocation);
-	xi_pShape->setFillColor(xi_color);
-//	speed = xi_speed;
-	pShape = xi_pShape;
+void virtualObject::addRectangleShape(sf::Vector2f xi_dimensions, sf::Color xi_color, sf::Vector2f xi_offsetFromVirtualLocation, sf::Vector2f xi_speed) {
+	sf::RectangleShape rectangleShape;
+	rectangleShape.setSize(xi_dimensions);
+	rectangleShape.setPosition(this->virtualLocation + xi_offsetFromVirtualLocation);
+	rectangleShape.setFillColor(xi_color);
+	rectangleShapesList.push_back(rectangleShape);
+	speed = xi_speed;
 }
+
+void virtualObject::loadShapesToAbstractShapeList() //Dont need?
+{
+	for (auto const& x : circleShapesList)
+	{
+		shapesList.push_back((sf::Shape *)&x);
+	}
+	for (auto const& x : rectangleShapesList)
+	{
+		cout << "load" << endl;
+		shapesList.push_back((sf::Shape *)&x);
+	}
+}
+
+void BasicObjects::drawAllBasicShapes()
+{
+	for (auto const& i : allGamePieces)
+	{
+		for (auto const& x : i->getShapeList())
+		{
+			drawFunc(x);
+		}
+	}
+}
+
+
+
+
+void BasicObjects::movePaddleLeft()
+{
+	paddleObj.setSpeed ({ -min((float)GAME_OBJECTS_PADDLE_REGULAR_SPEED, (paddleObj.getVirtualLocation().x - gameFrame.getVirtualLocation().x)),0 });
+	paddleObj.moveStep();
+}
+
+void BasicObjects::movePaddleRight()
+{
+	paddleObj.setSpeed({
+		min( (float)GAME_OBJECTS_PADDLE_REGULAR_SPEED,
+		gameFrame.getVirtualLocation().x + gameFrame.getVirtualDimensions().x - (paddleObj.getVirtualLocation().x + paddleObj.getVirtualDimensions().x))
+		,0 });
+	paddleObj.moveStep();
+}
+
+
+void BasicObjects::moveBall()
+{
+	ballObj.moveStep();
+	//if 
+
+}
+
+void virtualObject::moveStep()
+{
+	//cout << "M1" << endl;
+	virtualLocation += speed;
+	for (auto const& i : shapesList)
+	{
+		cout << "M2" << endl;
+		i->move(speed.x, speed.y);
+	}
+}
+

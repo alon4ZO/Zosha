@@ -14,15 +14,15 @@ int main()
 {
 	Display display;
 	Engine engine;
-	Animate Animate;
+	BasicObjects basicObjects;
 
 	display.init();
 
-	Animate.registerDrawFunction([&display](sf::Shape* xi_pShape) -> void { return display.drawShape(xi_pShape); });
-	Animate.registerMoveFunction([&display](sf::Shape* xi_pShape) -> void { return display.moveShape(xi_pShape); });
+	basicObjects.registerDrawFunction([&display](sf::Shape* xi_pShape) -> void { return display.drawShape(xi_pShape); });
+	basicObjects.registerMoveFunction([&display](sf::Shape* xi_pShape) -> void { return display.moveShape(xi_pShape); });
 
-	Animate.init(display.getScreenSize());
-	engine.init(&Animate, &display);
+	basicObjects.init(display.getScreenSize());
+	engine.init(&basicObjects, &display);
 	return 0;
 }
 

@@ -16,23 +16,9 @@ sf::RenderWindow * pWindow; //ALONB - temp..
 
 
 
-void Engine::init(Animate *xi_pAnimate, Display * display)
+void Engine::init(BasicObjects *xi_pBasicObjects, Display * display)
 {
-
-	//std::list<combinedObjGeneric*> list = xi_pObjects->getrefreshList();
-
-	//for (std::list<combinedObjGeneric*>::iterator listIt = list.begin(); listIt != list.end(); listIt++)
-	//{
-	//	std::list<basicObjectCommon *> shapeList = (*listIt)->getShapeList();
-	//	cout << "Size" << shapeList.size() << endl;
-	//	for (std::list<basicObjectCommon*>::iterator listShapesInComplexObject = shapeList.begin(); listShapesInComplexObject != shapeList.end(); listShapesInComplexObject++)
-	//	{
-	//		cout << "Loading Shape" << endl;
-	//	    sf::Shape * s = (*listShapesInComplexObject)->getShape();
-	//		xi_pObjects->getDrawFunction()(s);
-	//	}
-	//}
-	xi_pAnimate->drawAllBasicShapes();
+	xi_pBasicObjects->drawAllBasicShapes();
 	//pWindow->display();
 	display->display();
 
@@ -43,22 +29,21 @@ void Engine::init(Animate *xi_pAnimate, Display * display)
 //	t1.join();
 	while (1)
 	{
-
 		sf::Event event; //why do i have to poll the event?
 		pWindow->pollEvent(event);
 
 		if (GetKeyState(VK_LEFT) & 0x8000) {
-			xi_pAnimate->movePaddleLeft();
+			xi_pBasicObjects->movePaddleLeft();
 		}
 
-		if (GetKeyState(VK_RIGHT) & 0x8000) {
-			xi_pAnimate->movePaddleRight();
+		else if (GetKeyState(VK_RIGHT) & 0x8000) {
+			xi_pBasicObjects->movePaddleRight();
 		}
 
-		xi_pAnimate->moveBall();
+		xi_pBasicObjects->moveBall();
 
 		pWindow->clear();
-		xi_pAnimate->drawAllBasicShapes();
+		xi_pBasicObjects->drawAllBasicShapes();
 		display->display();
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(STEP_INTERVAL_MS));
@@ -66,10 +51,23 @@ void Engine::init(Animate *xi_pAnimate, Display * display)
 }
 
 
-void Engine::gameThread(Animate * xi_pAnimate, Display * display) {
-	pWindow->setActive(true);
 
-}
+
+
+
+
+
+
+
+
+
+
+
+
+//void Engine::gameThread(Animate * xi_pAnimate, Display * display) {
+//	pWindow->setActive(true);
+//
+//}
 
 	//while (1)
 	//{
