@@ -5,25 +5,27 @@
 #include <list>
 #include <functional>
 
+//Colors:
+#define GAME_OBJECTS_GAME_WIN_COLOR                      (sf::Color::Black)
+#define GAME_OBJECTS_GAME_WIN_FRAME_COLOR                (sf::Color::Magenta)
+#define GAME_OBJECTS_BALL_COLOR                          (sf::Color::Red)
+#define GAME_OBJECTS_PADDLE_COLOR		                 (sf::Color::Blue)
 
-#define GAME_OBJECTS_GAME_WIN_COLOR   (sf::Color::Black)
-#define GAME_OBJECTS_GAME_WIN_FRAME_COLOR   (sf::Color::Magenta)
-#define GAME_OBJECTS_BALL_COLOR   (sf::Color::Red)
-#define GAME_OBJECTS_PADDLE_COLOR (sf::Color::Blue)
+//Dimensions:
+#define GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO       (0.03) //TO Y AXIS
+#define GAME_OBJECTS_GAME_WIN_HEIGHT_RATIO               (0.9)
+#define GAME_OBJECTS_GAME_WIN_WIDTH_RATIO                (0.65)
 
+#define GAME_OBJECTS_PADDLE_VERTICAL_THICKNESS_RATIO     (0.03)
+#define GAME_OBJECTS_PADDLE_VERTICAL_HEIGHT              (0.93)
+#define GAME_OBJECTS_PADDLE_WIDTH_RATIO                  (0.125) //Length
 
-#define GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO (0.03) //TO Y AXIS
-#define GAME_OBJECTS_GAME_WIN_HEIGHT_RATIO (0.9)
-#define GAME_OBJECTS_GAME_WIN_WIDTH_RATIO (0.65)
+#define GAME_OBJECTS_BALL_RADIUS_RATIO                   (0.025)
 
-
-#define GAME_OBJECTS_PADDLE_VERTICAL_THICKNESS_RATIO (0.03)
-#define GAME_OBJECTS_PADDLE_VERTICAL_HEIGHT (0.93)
-#define GAME_OBJECTS_PADDLE_WIDTH_RATIO (0.125) //Length
-
-#define GAME_OBJECTS_PADDLE_REGULAR_SPEED (7)
-#define GAME_OBJECTS_BALL_DEFAULT_SPEED_X (7)
-#define GAME_OBJECTS_BALL_DEFAULT_SPEED_Y (7)
+//Speed:
+#define GAME_OBJECTS_PADDLE_REGULAR_SPEED                (7) //ALONB - change to ratios.
+#define GAME_OBJECTS_BALL_DEFAULT_SPEED_X                (1)
+#define GAME_OBJECTS_BALL_DEFAULT_SPEED_Y                (1)
 
 
 class basicObjectCommon
@@ -31,8 +33,8 @@ class basicObjectCommon
 	sf::Shape * pShape; 
 
 public:
-	void setCircleCharacteristics(sf::CircleShape* xi_pShape, sf::Vector2f xi_centerLocation, sf::Vector2i xi_speed, float xi_radius, sf::Color xi_color);
-	void setRectangleCharacteristics(sf::RectangleShape* xi_pShape, sf::Vector2f xi_centerLocation, sf::Vector2i xi_speed, sf::Vector2f xi_dimensions, sf::Color xi_color); //ALONB - why can't i overload these 2 functions? It keeps on selecting the wrong 1?
+	void setCircleCharacteristics(sf::CircleShape* xi_pShape, sf::Vector2f xi_centerLocation, float xi_radius, sf::Color xi_color);
+	void setRectangleCharacteristics(sf::RectangleShape* xi_pShape, sf::Vector2f xi_centerLocation, sf::Vector2f xi_dimensions, sf::Color xi_color); //ALONB - why can't i overload these 2 functions? It keeps on selecting the wrong 1?
 	//void setCharacteristics(sf::RectangleShape*, sf::Vector2i xi_centerLocation, sf::Vector2i xi_speed, sf::Vector2f xi_dimensions ); //ALONB - why can't i overload these 2 functions? It keeps on selecting the wrong 1?
 	sf::Shape * getShape() { return pShape; };
 };
@@ -53,9 +55,15 @@ public:
 
 
 class ballObjC : public combinedObjGeneric {
-public: //ALONB change this logic. It doensnt make sense that this is protected.
+public: //ALONB change this logic. It doensnt make sense that this is public.
 	basicObjectCommon main;
 	sf::CircleShape mainShape;
+
+	float farthestRightLocationOfFirstShape;
+	float farthestLeftLocationOfFirstShape;
+	float farthestUpLocationOfFirstShape;
+	float farthestDownLocationOfFirstShape;
+
 };
 
 class paddleObjC : public combinedObjGeneric {

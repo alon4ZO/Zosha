@@ -11,7 +11,7 @@ void BasicObjects::init(sf::Vector2i xi_screenSize)
 	//Walls:
 	cout << "Initializing game objects. Screen Resolution [x,y] [" << xi_screenSize.x << "," << xi_screenSize.y << "]" << endl;
 
-	sf::Vector2i speed(0, 0);
+	sf::Vector2f speed(0, 0);
 	sf::Vector2f dimensions;
 	sf::Vector2f position;
 	sf::Vector2f screenSize((float)xi_screenSize.x, (float)xi_screenSize.y);
@@ -21,7 +21,7 @@ void BasicObjects::init(sf::Vector2i xi_screenSize)
 	position.x = (float)(int)(screenSize.x*(1 - GAME_OBJECTS_GAME_WIN_WIDTH_RATIO) / 2);
 	position.y = (float)(int)(screenSize.y*(1 - GAME_OBJECTS_GAME_WIN_HEIGHT_RATIO));
 
-	wallObj.center.setRectangleCharacteristics(&wallObj.centerShape, position, speed, dimensions, GAME_OBJECTS_GAME_WIN_COLOR);
+	wallObj.center.setRectangleCharacteristics(&wallObj.centerShape, position, dimensions, GAME_OBJECTS_GAME_WIN_COLOR);
 
 	dimensions.x += (float)(int)(2 * screenSize.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
 	dimensions.y += (float)(int)(screenSize.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
@@ -29,7 +29,7 @@ void BasicObjects::init(sf::Vector2i xi_screenSize)
 	position.y -= (float)(int)(screenSize.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
 
 
-	wallObj.outer.setRectangleCharacteristics(&wallObj.outerShape, position, speed, dimensions, GAME_OBJECTS_GAME_WIN_FRAME_COLOR);
+	wallObj.outer.setRectangleCharacteristics(&wallObj.outerShape, position, dimensions, GAME_OBJECTS_GAME_WIN_FRAME_COLOR);
 	wallObj.addBasicShape(&wallObj.outer);
 	wallObj.addBasicShape(&wallObj.center);
 	allGamePieces.push_back(&wallObj);
@@ -47,32 +47,41 @@ void BasicObjects::init(sf::Vector2i xi_screenSize)
 
 	paddleObj.farthestLeftLocationOfFirstShape = wallObj.center.getShape()->getPosition().x;
 	paddleObj.farthestRightLocationOfFirstShape = wallObj.center.getShape()->getPosition().x + wallObj.centerShape.getSize().x - dimensions.x;
-	paddleObj.main.setRectangleCharacteristics(&paddleObj.mainShape, position, speed, dimensions, GAME_OBJECTS_PADDLE_COLOR);
+	paddleObj.main.setRectangleCharacteristics(&paddleObj.mainShape, position, dimensions, GAME_OBJECTS_PADDLE_COLOR);
 	paddleObj.addBasicShape(&paddleObj.main);
 
 	allGamePieces.push_back(&paddleObj);
 
 
 	//Ball:
-	float radius = 100;
-	ballObj.main.setCircleCharacteristics(&ballObj.mainShape, position, speed, radius, GAME_OBJECTS_BALL_COLOR);
+	float radius = (float)(int)(screenSize.y *GAME_OBJECTS_BALL_RADIUS_RATIO);
+	position.x = (float)(int)(screenSize.x / 2);
+	ballObj.main.setCircleCharacteristics(&ballObj.mainShape, position, radius, GAME_OBJECTS_BALL_COLOR);
 	ballObj.addBasicShape(&ballObj.main);
+	ballObj.speed.x = GAME_OBJECTS_BALL_DEFAULT_SPEED_X;
+	ballObj.speed.y = GAME_OBJECTS_BALL_DEFAULT_SPEED_Y;
+
+
+	ballObj.farthestRightLocationOfFirstShape = wallObj.center.getShape()->getPosition().x + wallObj.centerShape.getSize().x - radius;
+	ballObj.farthestLeftLocationOfFirstShape = wallObj.center.getShape()->getPosition().x + radius;
+	ballObj.farthestUpLocationOfFirstShape = wallObj.center.getShape()->getPosition().y + radius;
 	allGamePieces.push_back(&ballObj);
 }
 
 
 
-void basicObjectCommon::setCircleCharacteristics(sf::CircleShape* xi_pShape, sf::Vector2f xi_centerLocation, sf::Vector2i xi_speed, float xi_radius, sf::Color xi_color) { //TODO: ADD COLOR
+void basicObjectCommon::setCircleCharacteristics(sf::CircleShape* xi_pShape, sf::Vector2f xi_centerLocation, float xi_radius, sf::Color xi_color) { //TODO: ADD COLOR //ALONB - the locations is not "Center Location".
 	cout << "set c" << endl;
-	xi_pShape->setPosition(0, 150);
-	xi_pShape->setRadius(100.f);
+	xi_pShape->setPosition(xi_centerLocation);
+	xi_pShape->setRadius(xi_radius);
 	xi_pShape->setFillColor(xi_color);
 	pShape = xi_pShape;
 }
 
-void basicObjectCommon::setRectangleCharacteristics(sf::RectangleShape* xi_pShape, sf::Vector2f xi_centerLocation, sf::Vector2i xi_speed, sf::Vector2f xi_dimensions, sf::Color xi_color) {
+void basicObjectCommon::setRectangleCharacteristics(sf::RectangleShape* xi_pShape, sf::Vector2f xi_centerLocation, sf::Vector2f xi_dimensions, sf::Color xi_color) {
 	xi_pShape->setSize(xi_dimensions);
 	xi_pShape->setPosition(xi_centerLocation);
 	xi_pShape->setFillColor(xi_color);
+//	speed = xi_speed;
 	pShape = xi_pShape;
 }

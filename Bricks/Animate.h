@@ -14,6 +14,7 @@ public:
 	void drawAllBasicShapes();
 	void movePaddleLeft();
 	void movePaddleRight();
+	void moveBall();
 };
 
 

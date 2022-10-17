@@ -55,11 +55,12 @@ void Engine::init(Animate *xi_pAnimate, Display * display)
 			xi_pAnimate->movePaddleRight();
 		}
 
+		xi_pAnimate->moveBall();
 
-	
 		pWindow->clear();
 		xi_pAnimate->drawAllBasicShapes();
 		display->display();
+
 		std::this_thread::sleep_for(std::chrono::milliseconds(STEP_INTERVAL_MS));
 	}
 }
