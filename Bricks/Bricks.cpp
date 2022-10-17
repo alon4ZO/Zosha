@@ -6,22 +6,23 @@
 #include "Display.h"
 #include "BasicObjects.h"
 #include "Engine.h"
+#include "Animate.h"
 using namespace std;
 
 
 int main()
 {
 	Display display;
-	BasicObjects basicObjects;
 	Engine engine;
+	Animate Animate;
 
 	display.init();
 
-	basicObjects.registerDisplayFunctions([&display](sf::Shape* xi_pShape) -> void { return display.drawShape(xi_pShape); });
-	//basicObjects.registerMoveFunction([&display](sf::Shape* xi_pShape) -> void { return display.moveShape(xi_pShape); });
-	basicObjects.init(display.getScreenSize());
+	Animate.registerDrawFunction([&display](sf::Shape* xi_pShape) -> void { return display.drawShape(xi_pShape); });
+	Animate.registerMoveFunction([&display](sf::Shape* xi_pShape) -> void { return display.moveShape(xi_pShape); });
 
-	engine.init(&basicObjects);
+	Animate.init(display.getScreenSize());
+	engine.init(&Animate, &display);
 	return 0;
 }
 

@@ -4,7 +4,6 @@
 using namespace std;
 //ALONB - what is the difference between .h and .hpp?
 
-extern sf::RenderWindow * pWindow; //ALONB - temp..
 
 
 void BasicObjects::init(sf::Vector2i xi_screenSize)
@@ -13,58 +12,57 @@ void BasicObjects::init(sf::Vector2i xi_screenSize)
 	cout << "Initializing game objects. Screen Resolution [x,y] [" << xi_screenSize.x << "," << xi_screenSize.y << "]" << endl;
 
 	sf::Vector2i speed(0, 0);
-	sf::Vector2f dimensions(xi_screenSize.x*GAME_OBJECTS_WALL_WIDTH_RATIO, xi_screenSize.y*GAME_OBJECTS_WALL_THIKNESS_RATIO);
-	sf::Vector2f position(xi_screenSize.x*(1-GAME_OBJECTS_WALL_WIDTH_RATIO)/2, xi_screenSize.y*(1 - GAME_OBJECTS_WALL_HEIGHT_RATIO));
+	sf::Vector2f dimensions;
+	sf::Vector2f position;
+	sf::Vector2f screenSize((float)xi_screenSize.x, (float)xi_screenSize.y);
 
-	wallObj.ceiling.setRectangleCharacteristics(&wallObj.celingShape, position, speed, dimensions, GAME_OBJECTS_WALL_COLOR);
+	dimensions.x = (float)(int)(screenSize.x*GAME_OBJECTS_GAME_WIN_WIDTH_RATIO);
+	dimensions.y = (float)(int)(screenSize.y*GAME_OBJECTS_GAME_WIN_HEIGHT_RATIO);
+	position.x = (float)(int)(screenSize.x*(1 - GAME_OBJECTS_GAME_WIN_WIDTH_RATIO) / 2);
+	position.y = (float)(int)(screenSize.y*(1 - GAME_OBJECTS_GAME_WIN_HEIGHT_RATIO));
 
-	dimensions.x = xi_screenSize.y*GAME_OBJECTS_WALL_THIKNESS_RATIO;
-	dimensions.y = xi_screenSize.y*(GAME_OBJECTS_WALL_HEIGHT_RATIO);
+	wallObj.center.setRectangleCharacteristics(&wallObj.centerShape, position, speed, dimensions, GAME_OBJECTS_GAME_WIN_COLOR);
+
+	dimensions.x += (float)(int)(2 * screenSize.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
+	dimensions.y += (float)(int)(screenSize.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
+	position.x -= (float)(int)(screenSize.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
+	position.y -= (float)(int)(screenSize.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
 
 
-	wallObj.left.setRectangleCharacteristics(&wallObj.leftShape, position, speed, dimensions, GAME_OBJECTS_WALL_COLOR);
-	position.x += (xi_screenSize.x*GAME_OBJECTS_WALL_WIDTH_RATIO - xi_screenSize.y*GAME_OBJECTS_WALL_THIKNESS_RATIO);
+	wallObj.outer.setRectangleCharacteristics(&wallObj.outerShape, position, speed, dimensions, GAME_OBJECTS_GAME_WIN_FRAME_COLOR);
+	wallObj.addBasicShape(&wallObj.outer);
+	wallObj.addBasicShape(&wallObj.center);
+	allGamePieces.push_back(&wallObj);
 
-	wallObj.right.setRectangleCharacteristics(&wallObj.rightShape, position, speed, dimensions, GAME_OBJECTS_WALL_COLOR);
 
-	wallObj.addBasicShape(&wallObj.ceiling);
-	wallObj.addBasicShape(&wallObj.left);
-	wallObj.addBasicShape(&wallObj.right);
-	//refreshList.push_front(&wallObj);
+
 
 	//Paddle:
 
-	dimensions.x = xi_screenSize.x *GAME_OBJECTS_PADDLE_WIDTH_RATIO;
-	dimensions.y = xi_screenSize.y *GAME_OBJECTS_PADDLE_VERTICAL_THICKNESS_RATIO;
-	position.y = xi_screenSize.y *GAME_OBJECTS_PADDLE_VERTICAL_HEIGHT;
-	position.x = (xi_screenSize.x - dimensions.x)/2;
-	paddleObj.main.setRectangleCharacteristics(&paddleObj.mainShape, position, speed, dimensions, GAME_OBJECTS_PADDLE_COLOR );
+	dimensions.x = (float)(int)(screenSize.x *GAME_OBJECTS_PADDLE_WIDTH_RATIO);
+	dimensions.y = (float)(int)(screenSize.y *GAME_OBJECTS_PADDLE_VERTICAL_THICKNESS_RATIO);
+	position.y = (float)(int)(screenSize.y *GAME_OBJECTS_PADDLE_VERTICAL_HEIGHT);
+	position.x = (float)(int)((screenSize.x - dimensions.x) / 2);
+	paddleObj.speed.x = GAME_OBJECTS_PADDLE_REGULAR_SPEED;
+
+	paddleObj.farthestLeftLocationOfFirstShape = wallObj.center.getShape()->getPosition().x;
+	paddleObj.farthestRightLocationOfFirstShape = wallObj.center.getShape()->getPosition().x + wallObj.centerShape.getSize().x - dimensions.x;
+	paddleObj.main.setRectangleCharacteristics(&paddleObj.mainShape, position, speed, dimensions, GAME_OBJECTS_PADDLE_COLOR);
 	paddleObj.addBasicShape(&paddleObj.main);
-	//refreshList.push_front(&paddleObj);
+
+	allGamePieces.push_back(&paddleObj);
+
 
 	//Ball:
 	float radius = 100;
 	ballObj.main.setCircleCharacteristics(&ballObj.mainShape, position, speed, radius, GAME_OBJECTS_BALL_COLOR);
 	ballObj.addBasicShape(&ballObj.main);
-	//refreshList.push_front(&ballObj);
-
-	loadAllObjectShapes(&ballObj);
-	loadAllObjectShapes(&paddleObj);
-	loadAllObjectShapes(&wallObj);
-
-}
-
-void BasicObjects::loadAllObjectShapes(combinedObjGeneric * xi_object)
-{
-	xi_object->getShapeList();
+	allGamePieces.push_back(&ballObj);
 }
 
 
 
 void basicObjectCommon::setCircleCharacteristics(sf::CircleShape* xi_pShape, sf::Vector2f xi_centerLocation, sf::Vector2i xi_speed, float xi_radius, sf::Color xi_color) { //TODO: ADD COLOR
-	//centerLocation = xi_centerLocation;
-	speed = xi_speed;
-	//radius = xi_radius;
 	cout << "set c" << endl;
 	xi_pShape->setPosition(0, 150);
 	xi_pShape->setRadius(100.f);
@@ -73,16 +71,8 @@ void basicObjectCommon::setCircleCharacteristics(sf::CircleShape* xi_pShape, sf:
 }
 
 void basicObjectCommon::setRectangleCharacteristics(sf::RectangleShape* xi_pShape, sf::Vector2f xi_centerLocation, sf::Vector2i xi_speed, sf::Vector2f xi_dimensions, sf::Color xi_color) {
-	//centerLocation = xi_centerLocation;
-	speed = xi_speed;
-	//dimensions = xi_dimensions;
 	xi_pShape->setSize(xi_dimensions);
 	xi_pShape->setPosition(xi_centerLocation);
 	xi_pShape->setFillColor(xi_color);
 	pShape = xi_pShape;
 }
-
-//void BasicObjects::movePaddleLeft() {
-//	for (auto const& i : BasicObjects::paddleObj.getShapeList()) { ; }
-//}
-

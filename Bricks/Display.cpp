@@ -6,7 +6,6 @@
 
 
 using namespace std;
-sf::RenderWindow * pWindow;
 
 
 void Display::init() {

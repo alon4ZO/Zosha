@@ -8,7 +8,7 @@ class Display
 {
 	sf::Vector2i screenSize;
 	sf::Vector2i playSize;
-	sf::RenderWindow window;
+	sf::RenderWindow * pWindow;
 
 
 	public: 
@@ -17,6 +17,9 @@ class Display
 		sf::Vector2i getScreenSize();
 		void drawShape(sf::Shape * xi_shape);
 		void moveShape(sf::Shape * xi_shape);
+		void display() { pWindow->display(); }
+		void clear() { pWindow->clear(); }
+		sf::RenderWindow * getWindow() { return pWindow; } //ALONB - remove.
 		//void addShapeToWindow(Shape objects); TODO ALONB
 };
 
