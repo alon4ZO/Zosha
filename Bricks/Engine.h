@@ -3,7 +3,7 @@
 #include "Animate.h"
 
 
-#define STEP_INTERVAL_MS (5)
+#define STEP_INTERVAL_MS (16)
 
 class Engine
 {

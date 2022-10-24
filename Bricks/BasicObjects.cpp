@@ -26,74 +26,82 @@ void BasicObjects::init(sf::Vector2i xi_screenSize)
 	dimensionsWindow.y = (float)(int)(screenSize.y*GAME_OBJECTS_GAME_WIN_HEIGHT_RATIO);
 	positionWindow.x = (float)(int)(screenSize.x*(1 - GAME_OBJECTS_GAME_WIN_WIDTH_RATIO) / 2);
 	positionWindow.y = (float)(int)(screenSize.y*(1 - GAME_OBJECTS_GAME_WIN_HEIGHT_RATIO));
+
+	dimensionsWindow.x = dimensionsWindow.x - (float)((int)dimensionsWindow.x % 140); //ALONB - try to remove.
 	gameFrame.setVirtualLocation(positionWindow); //According to inner window.
 	gameFrame.setVirtualDimensions(dimensionsWindow); //According to inner window.
 
+	cout << "Game Window Dimensions [x,y] [" << gameFrame.getVirtualDimensions().x << "," << gameFrame.getVirtualDimensions().y << "]" << endl;
+	cout << "Game Window Location [x] [" << gameFrame.getVirtualLocation().x << endl;
 
-	dimensionsFrame.x = dimensionsWindow.x + (float)(int)(2 * screenSize.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
-	dimensionsFrame.y = dimensionsWindow.y + (float)(int)(screenSize.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
-	positionOffsetFrame.x = (float)(int)(-screenSize.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
-	positionOffsetFrame.y = (float)(int)(-screenSize.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
 
-	gameFrame.addRectangleShape(dimensionsFrame, GAME_OBJECTS_GAME_WIN_FRAME_COLOR, positionOffsetFrame, speed);
-	gameFrame.addRectangleShape(dimensionsWindow, GAME_OBJECTS_GAME_WIN_COLOR, sf::Vector2f{ 0,0 }, speed);
+
+	dimensionsFrame.x = dimensionsWindow.x + (float)(int)(2 * dimensionsWindow.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
+	dimensionsFrame.y = dimensionsWindow.y + (float)(int)(dimensionsWindow.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
+	positionOffsetFrame.x = (float)(int)(-dimensionsWindow.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
+	positionOffsetFrame.y = (float)(int)(-dimensionsWindow.y*GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO);
+
+	gameFrame.addRectangleShape(dimensionsFrame, GAME_OBJECTS_GAME_WIN_FRAME_COLOR, positionOffsetFrame);
+	gameFrame.addRectangleShape(dimensionsWindow, GAME_OBJECTS_GAME_WIN_COLOR, sf::Vector2f{ 0,0 });
 
 	gameFrame.loadShapesToAbstractShapeList();
 	allGamePieces.push_back(&gameFrame);
 
 
 	//Paddle:
-	dimensionsPaddle.x = (float)(int)(screenSize.x *GAME_OBJECTS_PADDLE_WIDTH_RATIO);
-	dimensionsPaddle.y = (float)(int)(screenSize.y *GAME_OBJECTS_PADDLE_VERTICAL_THICKNESS_RATIO);
-	positionPaddle.y = (float)(int)(screenSize.y *GAME_OBJECTS_PADDLE_VERTICAL_HEIGHT);
-	positionPaddle.x = (float)(int)((screenSize.x - dimensionsPaddle.x) / 2);
+	dimensionsPaddle.x = (float)(int)(dimensionsWindow.x *GAME_OBJECTS_PADDLE_WIDTH_RATIO);
+	dimensionsPaddle.y = (float)(int)(dimensionsWindow.y *GAME_OBJECTS_PADDLE_VERTICAL_THICKNESS_RATIO);
+	positionPaddle.y = (float)(int)(positionWindow.y + dimensionsWindow.y*GAME_OBJECTS_PADDLE_VERTICAL_HEIGHT);
+	positionPaddle.x = (float)(int)(positionWindow.x +(dimensionsWindow.x - dimensionsPaddle.x) / 2);
 	paddleObj.setVirtualDimensions(dimensionsPaddle);
 	paddleObj.setVirtualLocation(positionPaddle);
 
-	speed.x = GAME_OBJECTS_PADDLE_REGULAR_SPEED;
+	speed.x = GAME_OBJECTS_PADDLE_PIXELS_PER_US;
 
 	paddleObj.setMotionLimitLeft(gameFrame.getVirtualLocation().x);
-	paddleObj.setMotionLimitRight(gameFrame.getVirtualLocation().x + gameFrame.getVirtualDimensions().x);
+	paddleObj.setMotionLimitRight(gameFrame.getVirtualLocation().x + gameFrame.getVirtualDimensions().x - dimensionsPaddle.x);
 
-	paddleObj.addRectangleShape(dimensionsPaddle, GAME_OBJECTS_PADDLE_COLOR, { 0,0 }, speed);
+	paddleObj.addRectangleShape(dimensionsPaddle, GAME_OBJECTS_PADDLE_COLOR, { 0,0 });
+	paddleObj.setBasicSpeed({ GAME_OBJECTS_PADDLE_PIXELS_PER_US , 0});
 	paddleObj.loadShapesToAbstractShapeList();
 	allGamePieces.push_back(&paddleObj);
 
 
 	//Ball:
-	float radius = (float)(int)(screenSize.y *GAME_OBJECTS_BALL_RADIUS_RATIO);
+	float radius = (float)(int)(dimensionsWindow.x *GAME_OBJECTS_BALL_RADIUS_RATIO);
 
-	ballObj.setVirtualDimensions( { radius, radius }); 
-	ballObj.setVirtualLocation( { (float)(int)(screenSize.x / 2), (float)(int)(screenSize.y / 2) });
-	ballObj.addCircleShape(radius, GAME_OBJECTS_BALL_COLOR, { 0,0 }, { GAME_OBJECTS_BALL_DEFAULT_SPEED_X , GAME_OBJECTS_BALL_DEFAULT_SPEED_Y });
+	ballObj.setVirtualDimensions( { 2*radius, 2*radius }); 
+	ballObj.setVirtualLocation( { (float)(int)(positionWindow.x + dimensionsWindow.x/2), (float)(int)(dimensionsWindow.y / 2) });
+	
+	ballObj.setBasicSpeed({ GAME_OBJECTS_BALL_PIXELS_PER_US_X, GAME_OBJECTS_BALL_PIXELS_PER_US_Y });
+	ballObj.addCircleShape(radius, GAME_OBJECTS_BALL_COLOR, { 0,0 });
+
+	ballObj.setMotionLimitLeft(gameFrame.getVirtualLocation().x);
+	ballObj.setMotionLimitRight(gameFrame.getVirtualLocation().x + gameFrame.getVirtualDimensions().x - ballObj.getVirtualDimensions().x);
+	ballObj.setMotionLimitTop(gameFrame.getVirtualLocation().y);
+	ballObj.setMotionLimitBottom(paddleObj.getVirtualLocation().y - ballObj.getVirtualDimensions().y);
+	
 	ballObj.loadShapesToAbstractShapeList(); //ALONB - do it inside the functions, but watch out not to do it with a pointer that does not exist anymore.
-
-	ballObj.setMotionLimitLeft(0);
-	ballObj.setMotionLimitRight(0);
-	ballObj.setMotionLimitTop(0);
-	ballObj.setMotionLimitBottom(0);
 	allGamePieces.push_back(&ballObj);
 }
 
 
 
-void virtualObject::addCircleShape(float xi_radius, sf::Color xi_color, sf::Vector2f xi_offsetFromVirtualLocation, sf::Vector2f xi_speed) {
+void virtualObject::addCircleShape(float xi_radius, sf::Color xi_color, sf::Vector2f xi_offsetFromVirtualLocation) { //ALONB - speed should be with API and not per shape. (so remove it from this declaration.
 	sf::CircleShape circleShape;
 	circleShape.setRadius(xi_radius);
 	circleShape.setPosition(this->virtualLocation + xi_offsetFromVirtualLocation);
 	circleShape.setFillColor(xi_color);
 	circleShapesList.push_back(circleShape);
-	speed = xi_speed;
 
 }
 
-void virtualObject::addRectangleShape(sf::Vector2f xi_dimensions, sf::Color xi_color, sf::Vector2f xi_offsetFromVirtualLocation, sf::Vector2f xi_speed) {
+void virtualObject::addRectangleShape(sf::Vector2f xi_dimensions, sf::Color xi_color, sf::Vector2f xi_offsetFromVirtualLocation) {
 	sf::RectangleShape rectangleShape;
 	rectangleShape.setSize(xi_dimensions);
 	rectangleShape.setPosition(this->virtualLocation + xi_offsetFromVirtualLocation);
 	rectangleShape.setFillColor(xi_color);
 	rectangleShapesList.push_back(rectangleShape);
-	speed = xi_speed;
 }
 
 void virtualObject::loadShapesToAbstractShapeList() //Dont need?
@@ -121,39 +129,89 @@ void BasicObjects::drawAllBasicShapes()
 }
 
 
-
+void BasicObjects::reset()
+{
+	ballObj.setLocation({ gameFrame.getVirtualLocation().x + gameFrame.getVirtualDimensions().x/2  , gameFrame.getVirtualLocation().y *3/2 });
+	ballActive = true;
+}
 
 void BasicObjects::movePaddleLeft()
 {
-	paddleObj.setSpeed ({ -min((float)GAME_OBJECTS_PADDLE_REGULAR_SPEED, (paddleObj.getVirtualLocation().x - gameFrame.getVirtualLocation().x)),0 });
-	paddleObj.moveStep();
+	sf::Vector2f paddleStepProjection = paddleObj.getBasicSpeed() * (float)timeSinceLastStepUS;
+	paddleObj.moveStep({ -min((float)paddleStepProjection.x, (paddleObj.getVirtualLocation().x - gameFrame.getVirtualLocation().x)), 0 });
 }
 
 void BasicObjects::movePaddleRight()
 {
-	paddleObj.setSpeed({
-		min( (float)GAME_OBJECTS_PADDLE_REGULAR_SPEED,
-		gameFrame.getVirtualLocation().x + gameFrame.getVirtualDimensions().x - (paddleObj.getVirtualLocation().x + paddleObj.getVirtualDimensions().x))
-		,0 });
-	paddleObj.moveStep();
+	sf::Vector2f paddleStepProjection = paddleObj.getBasicSpeed() * (float)timeSinceLastStepUS;
+	paddleObj.moveStep({ min((float)paddleStepProjection.x, (paddleObj.getMotionLimitRight() - paddleObj.getVirtualLocation().x) ) , 0 });
 }
-
 
 void BasicObjects::moveBall()
 {
-	ballObj.moveStep();
-	//if 
+	sf::Vector2f ballStepProjection = ballObj.getBasicSpeed() * (float)timeSinceLastStepUS;
+ 	sf::Vector2f newProjectedLocation = ballObj.getVirtualLocation() + ballStepProjection;
+	sf::Vector2f moveBall = { ballStepProjection.x, ballStepProjection.y };
 
+	if (newProjectedLocation.x <= ballObj.getMotionLimitLeft())
+	{
+		moveBall.x = - ballStepProjection.x - 2 * (ballObj.getVirtualLocation().x - ballObj.getMotionLimitLeft());
+		ballObj.setBasicSpeed({ -ballObj.getBasicSpeed().x, ballObj.getBasicSpeed().y });
+	}
+
+	else if (newProjectedLocation.x >= ballObj.getMotionLimitRight())
+	{
+		moveBall.x = -(ballStepProjection.x - 2 * (ballObj.getMotionLimitRight() - ballObj.getVirtualLocation().x));
+		ballObj.setBasicSpeed({ -ballObj.getBasicSpeed().x, ballObj.getBasicSpeed().y });
+	}
+
+	if (newProjectedLocation.y <= ballObj.getMotionLimitUp())
+	{
+		moveBall.y = -ballStepProjection.y - 2 * (ballObj.getVirtualLocation().y - ballObj.getMotionLimitUp());
+		ballObj.setBasicSpeed({ ballObj.getBasicSpeed().x, -ballObj.getBasicSpeed().y });
+	}
+
+	else if (newProjectedLocation.y >= ballObj.getMotionLimitBottom() && ballActive)
+	{
+		ballActive = false;
+		float returnAngleRelativeToTop = 0;
+		if (BasicObjects::getBallReturnAngleDuringPaddleHit(ballObj.getVirtualLocation().x + ballObj.getVirtualDimensions().x/2, paddleObj.getVirtualLocation().x, paddleObj.getVirtualLocation().x + paddleObj.getVirtualDimensions().x, &returnAngleRelativeToTop))
+		{
+   			moveBall.y = -(ballStepProjection.y - 2 * (ballObj.getMotionLimitBottom() - ballObj.getVirtualLocation().y));
+ 			ballObj.setBasicSpeed({ ballObj.getBasicSpeed().x, -ballObj.getBasicSpeed().y });
+			ballActive = true;
+			cout << returnAngleRelativeToTop << endl;
+		}		
+	}
+
+ 	ballObj.moveStep(moveBall);
 }
 
-void virtualObject::moveStep()
+bool BasicObjects::getBallReturnAngleDuringPaddleHit(float xi_BallTouchPoint, float xi_PaddleLeftPoint, float xi_PaddleRightPoint, float * xo_pReturnAngleRelativeToTop)
 {
-	//cout << "M1" << endl;
-	virtualLocation += speed;
+	if (xi_BallTouchPoint < xi_PaddleLeftPoint || xi_BallTouchPoint > xi_PaddleRightPoint)
+	{
+		return false;
+	}
+
+	*xo_pReturnAngleRelativeToTop = GAME_OBJECTS_BALL_MAX_ANGLE * (xi_BallTouchPoint - (xi_PaddleLeftPoint + xi_PaddleRightPoint)/2) / (paddleObj.getVirtualDimensions().x / 2);
+	return true;
+}
+
+void virtualObject::moveStep(sf::Vector2f xi_step)
+{
+	virtualLocation += xi_step;
 	for (auto const& i : shapesList)
 	{
-		cout << "M2" << endl;
-		i->move(speed.x, speed.y);
+		i->move(xi_step.x, xi_step.y);
 	}
 }
 
+void virtualObject::setLocation(sf::Vector2f xi_location)
+{
+	virtualLocation = xi_location;
+	for (auto const& i : shapesList)
+	{
+		i->setPosition(xi_location.x, xi_location.y);
+	}
+}

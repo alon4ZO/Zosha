@@ -36,18 +36,19 @@ enum SHAPES_FOR_OBJECT_PADDLE_E {
 //Dimensions:
 #define GAME_OBJECTS_GAME_WIN_FRAME_THIKNESS_RATIO       (0.03) //TO Y AXIS
 #define GAME_OBJECTS_GAME_WIN_HEIGHT_RATIO               (0.9)
-#define GAME_OBJECTS_GAME_WIN_WIDTH_RATIO                (0.65)
+#define GAME_OBJECTS_GAME_WIN_WIDTH_RATIO                (0.63)
 
-#define GAME_OBJECTS_PADDLE_VERTICAL_THICKNESS_RATIO     (0.03)
-#define GAME_OBJECTS_PADDLE_VERTICAL_HEIGHT              (0.93)
-#define GAME_OBJECTS_PADDLE_WIDTH_RATIO                  (0.125) //Length
+#define GAME_OBJECTS_PADDLE_VERTICAL_THICKNESS_RATIO     (0.025)
+#define GAME_OBJECTS_PADDLE_VERTICAL_HEIGHT              (0.91)
+#define GAME_OBJECTS_PADDLE_WIDTH_RATIO                  (0.2) //Length
 
-#define GAME_OBJECTS_BALL_RADIUS_RATIO                   (0.025)
+#define GAME_OBJECTS_BALL_RADIUS_RATIO                   (0.015)
 
 //Speed:
-#define GAME_OBJECTS_PADDLE_REGULAR_SPEED                (7) //ALONB - change to ratios.
-#define GAME_OBJECTS_BALL_DEFAULT_SPEED_X                (2)
-#define GAME_OBJECTS_BALL_DEFAULT_SPEED_Y                (-1)
+#define GAME_OBJECTS_PADDLE_PIXELS_PER_US                ((float)0.8/1000)
+#define GAME_OBJECTS_BALL_PIXELS_PER_US_X                ((float)0/1000)
+#define GAME_OBJECTS_BALL_PIXELS_PER_US_Y                ((float)-0.5/1000)
+#define GAME_OBJECTS_BALL_MAX_ANGLE                      ((float)45)
 
 
 class virtualObject
@@ -70,13 +71,13 @@ public:
 //	void addBasicShape(sf::Shape * xi_shape) { shapeList.push_back(xi_shape); }
 	auto getShapeList() { return shapesList; }
 
-	void addCircleShape(float xi_radius, sf::Color xi_color, sf::Vector2f xi_offsetFromVirtualLocation, sf::Vector2f xi_speed);
-	void addRectangleShape(sf::Vector2f xi_dimensions, sf::Color xi_color, sf::Vector2f xi_offsetFromVirtualLocation, sf::Vector2f xi_speed); //ALONB - why can't i overload these 2 functions? It keeps on selecting the wrong 1?
+	void addCircleShape(float xi_radius, sf::Color xi_color, sf::Vector2f xi_offsetFromVirtualLocation);
+	void addRectangleShape(sf::Vector2f xi_dimensions, sf::Color xi_color, sf::Vector2f xi_offsetFromVirtualLocation); //ALONB - why can't i overload these 2 functions? It keeps on selecting the wrong 1?
 	
 
 	sf::Vector2f getVirtualDimensions()					             { return virtualDimensions; }
 	sf::Vector2f getVirtualLocation()					             { return virtualLocation;  }
-	sf::Vector2f getSpeed()								             { return speed;  }
+	sf::Vector2f getBasicSpeed()								     { return speed;  }
 	float        getMotionLimitLeft()					             { return motionLimitLeft;  }
 	float        getMotionLimitRight()					             { return motionLimitRight;  }
 	float        getMotionLimitUp()						             { return motionLimitUp;  }
@@ -85,22 +86,22 @@ public:
 
 	void         setMotionLimitLeft(float xi_val)                    { motionLimitLeft = xi_val;  }
 	void         setMotionLimitRight(float xi_val)                   { motionLimitRight = xi_val;  }
-	void         setMotionLimitTop(float xi_val)                      { motionLimitUp = xi_val;  }
+	void         setMotionLimitTop(float xi_val)                     { motionLimitUp = xi_val;  }
 	void         setMotionLimitBottom(float xi_val)                  { motionLimitBottom = xi_val; }
 	void setVirtualDimensions(sf::Vector2f x_virtualDimensions)      { virtualDimensions = x_virtualDimensions; }
 	void setVirtualLocation(sf::Vector2f x_virtualLocation)          { virtualLocation = x_virtualLocation; }
-	void setSpeed(sf::Vector2f xi_speed )                            { speed = xi_speed; }
+	void setBasicSpeed(sf::Vector2f xi_speed )                       { speed = xi_speed; }
 	
 	void loadShapesToAbstractShapeList();
-	void moveStep();								
+	void moveStep(sf::Vector2f xi_step);
+	void setLocation(sf::Vector2f xi_location);
 
 
 
 };
 
-class BasicObjects : public virtualObject
+class BasicObjects
 {
-protected:
 	virtualObject ballObj;
 	virtualObject paddleObj;
 	virtualObject gameFrame;
@@ -109,16 +110,21 @@ protected:
 	std::function<void(sf::Shape *)> drawFunc;
 	std::function<void(sf::Shape *)> moveFunc;
 
+	bool getBallReturnAngleDuringPaddleHit(float xi_BallTouchPoint, float xi_PaddleLeftPoint, float xi_PaddleRightPoint, float * xo_pReturnAngleRelativeToTop);
+	bool ballActive;
+
 public:
+	BasicObjects() { ballActive = true; }
 	void init(sf::Vector2i screenSize);
 	void registerDrawFunction(std::function<void(sf::Shape *)> xi_function) { drawFunc = xi_function; }
 	void registerMoveFunction(std::function<void(sf::Shape *)> xi_function) { moveFunc = xi_function; }
 	void drawAllBasicShapes();
 	void movePaddleLeft();
 	void movePaddleRight();
+	void reset();
 	void moveBall();
 
-	//auto getAllGamePieces() { return allGamePieces; }
+	int timeSinceLastStepUS;
 };
 
 
