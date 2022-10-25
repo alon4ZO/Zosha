@@ -6,7 +6,6 @@ using namespace std;
 
 
 
-
 void BasicObjects::init(sf::Vector2i xi_screenSize)
 {
 	//Walls:
@@ -62,7 +61,7 @@ void BasicObjects::init(sf::Vector2i xi_screenSize)
 	paddleObj.setMotionLimitRight(gameFrame.getVirtualLocation().x + gameFrame.getVirtualDimensions().x - dimensionsPaddle.x);
 
 	paddleObj.addRectangleShape(dimensionsPaddle, GAME_OBJECTS_PADDLE_COLOR, { 0,0 });
-	paddleObj.setBasicSpeed({ GAME_OBJECTS_PADDLE_PIXELS_PER_US , 0});
+	paddleObj.setSpeed( GAME_OBJECTS_PADDLE_PIXELS_PER_US , 0); //ALONB - use const not 90
 	paddleObj.loadShapesToAbstractShapeList();
 	allGamePieces.push_back(&paddleObj);
 
@@ -72,8 +71,9 @@ void BasicObjects::init(sf::Vector2i xi_screenSize)
 
 	ballObj.setVirtualDimensions( { 2*radius, 2*radius }); 
 	ballObj.setVirtualLocation( { (float)(int)(positionWindow.x + dimensionsWindow.x/2), (float)(int)(dimensionsWindow.y / 2) });
+
 	
-	ballObj.setBasicSpeed({ GAME_OBJECTS_BALL_PIXELS_PER_US_X, GAME_OBJECTS_BALL_PIXELS_PER_US_Y });
+	ballObj.setSpeed(GAME_OBJECTS_BALL_PIXELS_PER_US_VECTOR, GAME_OBJECTS_BALL_INIT_ANGLE);
 	ballObj.addCircleShape(radius, GAME_OBJECTS_BALL_COLOR, { 0,0 });
 
 	ballObj.setMotionLimitLeft(gameFrame.getVirtualLocation().x);
@@ -137,38 +137,38 @@ void BasicObjects::reset()
 
 void BasicObjects::movePaddleLeft()
 {
-	sf::Vector2f paddleStepProjection = paddleObj.getBasicSpeed() * (float)timeSinceLastStepUS;
+	sf::Vector2f paddleStepProjection = paddleObj.getSpeed() * (float)timeSinceLastStepUS;
 	paddleObj.moveStep({ -min((float)paddleStepProjection.x, (paddleObj.getVirtualLocation().x - gameFrame.getVirtualLocation().x)), 0 });
 }
 
 void BasicObjects::movePaddleRight()
 {
-	sf::Vector2f paddleStepProjection = paddleObj.getBasicSpeed() * (float)timeSinceLastStepUS;
+	sf::Vector2f paddleStepProjection = paddleObj.getSpeed() * (float)timeSinceLastStepUS;
 	paddleObj.moveStep({ min((float)paddleStepProjection.x, (paddleObj.getMotionLimitRight() - paddleObj.getVirtualLocation().x) ) , 0 });
 }
 
 void BasicObjects::moveBall()
 {
-	sf::Vector2f ballStepProjection = ballObj.getBasicSpeed() * (float)timeSinceLastStepUS;
+	sf::Vector2f ballStepProjection = ballObj.getSpeed() * (float)timeSinceLastStepUS;
  	sf::Vector2f newProjectedLocation = ballObj.getVirtualLocation() + ballStepProjection;
 	sf::Vector2f moveBall = { ballStepProjection.x, ballStepProjection.y };
 
 	if (newProjectedLocation.x <= ballObj.getMotionLimitLeft())
 	{
 		moveBall.x = - ballStepProjection.x - 2 * (ballObj.getVirtualLocation().x - ballObj.getMotionLimitLeft());
-		ballObj.setBasicSpeed({ -ballObj.getBasicSpeed().x, ballObj.getBasicSpeed().y });
+		ballObj.revSpeedX();
 	}
 
 	else if (newProjectedLocation.x >= ballObj.getMotionLimitRight())
 	{
 		moveBall.x = -(ballStepProjection.x - 2 * (ballObj.getMotionLimitRight() - ballObj.getVirtualLocation().x));
-		ballObj.setBasicSpeed({ -ballObj.getBasicSpeed().x, ballObj.getBasicSpeed().y });
+		ballObj.revSpeedX();
 	}
 
-	if (newProjectedLocation.y <= ballObj.getMotionLimitUp())
+	else if (newProjectedLocation.y <= ballObj.getMotionLimitUp())
 	{
 		moveBall.y = -ballStepProjection.y - 2 * (ballObj.getVirtualLocation().y - ballObj.getMotionLimitUp());
-		ballObj.setBasicSpeed({ ballObj.getBasicSpeed().x, -ballObj.getBasicSpeed().y });
+		ballObj.revSpeedY();
 	}
 
 	else if (newProjectedLocation.y >= ballObj.getMotionLimitBottom() && ballActive)
@@ -177,8 +177,8 @@ void BasicObjects::moveBall()
 		float returnAngleRelativeToTop = 0;
 		if (BasicObjects::getBallReturnAngleDuringPaddleHit(ballObj.getVirtualLocation().x + ballObj.getVirtualDimensions().x/2, paddleObj.getVirtualLocation().x, paddleObj.getVirtualLocation().x + paddleObj.getVirtualDimensions().x, &returnAngleRelativeToTop))
 		{
-   			moveBall.y = -(ballStepProjection.y - 2 * (ballObj.getMotionLimitBottom() - ballObj.getVirtualLocation().y));
- 			ballObj.setBasicSpeed({ ballObj.getBasicSpeed().x, -ballObj.getBasicSpeed().y });
+			moveBall = { 0,0 };
+ 			ballObj.setSpeed(GAME_OBJECTS_BALL_PIXELS_PER_US_VECTOR, (returnAngleRelativeToTop-90));
 			ballActive = true;
 			cout << returnAngleRelativeToTop << endl;
 		}		

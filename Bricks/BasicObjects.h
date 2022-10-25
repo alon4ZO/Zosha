@@ -46,9 +46,20 @@ enum SHAPES_FOR_OBJECT_PADDLE_E {
 
 //Speed:
 #define GAME_OBJECTS_PADDLE_PIXELS_PER_US                ((float)0.8/1000)
-#define GAME_OBJECTS_BALL_PIXELS_PER_US_X                ((float)0/1000)
-#define GAME_OBJECTS_BALL_PIXELS_PER_US_Y                ((float)-0.5/1000)
-#define GAME_OBJECTS_BALL_MAX_ANGLE                      ((float)45)
+
+
+#define GAME_OBJECTS_BALL_PIXELS_PER_US_VECTOR           ((float)0.45/1000)
+#define GAME_OBJECTS_BALL_INIT_ANGLE                     ((float)100)
+#define GAME_OBJECTS_BALL_MAX_ANGLE                      ((float)80)
+
+
+#define GAME_PARAMS_SPEED_DEG_TO_RAD_FACTOR              ((float)3.14159 / 180)
+
+
+// macros:
+#define cosDegrees(x) (cos(GAME_PARAMS_SPEED_DEG_TO_RAD_FACTOR * x))
+#define sinDegrees(x) (sin(GAME_PARAMS_SPEED_DEG_TO_RAD_FACTOR * x))
+
 
 
 class virtualObject
@@ -77,7 +88,7 @@ public:
 
 	sf::Vector2f getVirtualDimensions()					             { return virtualDimensions; }
 	sf::Vector2f getVirtualLocation()					             { return virtualLocation;  }
-	sf::Vector2f getBasicSpeed()								     { return speed;  }
+	sf::Vector2f getSpeed()			         					     { return speed;  }
 	float        getMotionLimitLeft()					             { return motionLimitLeft;  }
 	float        getMotionLimitRight()					             { return motionLimitRight;  }
 	float        getMotionLimitUp()						             { return motionLimitUp;  }
@@ -90,7 +101,9 @@ public:
 	void         setMotionLimitBottom(float xi_val)                  { motionLimitBottom = xi_val; }
 	void setVirtualDimensions(sf::Vector2f x_virtualDimensions)      { virtualDimensions = x_virtualDimensions; }
 	void setVirtualLocation(sf::Vector2f x_virtualLocation)          { virtualLocation = x_virtualLocation; }
-	void setBasicSpeed(sf::Vector2f xi_speed )                       { speed = xi_speed; }
+	void setSpeed(float xi_SpeedSize, float xi_directionAngleDeg)    { speed.x = xi_SpeedSize* cosDegrees(xi_directionAngleDeg); speed.y = xi_SpeedSize * sinDegrees(xi_directionAngleDeg); }
+	void revSpeedX()												 { speed.x *= -1; }
+	void revSpeedY()												 { speed.y *= -1; }
 	
 	void loadShapesToAbstractShapeList();
 	void moveStep(sf::Vector2f xi_step);
